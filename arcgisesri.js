@@ -4,6 +4,7 @@ require([
     'esri/views/MapView',
 
 	'esri/widgets/BasemapGallery',
+    'esri/widgets/BasemapToggle',
 	'esri/widgets/Expand',
 	'esri/widgets/ScaleBar',
 	'esri/widgets/Search',
@@ -13,6 +14,7 @@ require([
     MapView,
 
     BasemapGallery,
+    BasemapToggle,
     Expand,
     ScaleBar,
     Search,
@@ -26,41 +28,17 @@ require([
         // Construir mapa con el servicio de estilos base
         const map = createMap();
         // Cargar vista centrada en Colombia, Bogotá
-        this.viewMap = loadMapView(map);
+        viewMap = loadMapView(map);
 
         // Widget de Search
         configSearch();
         // Widget de BasemapGallery
         configBasemapGallery();
+        // Widget de BasemapToggle
+        configBasemapToggle();
         // Widget de ScaleBar
         configScaleBar();
     }
-
-    // Configurar widget de BasemapGallery
-    function configBasemapGallery() {
-        // Configurar widget de BasemapGallery
-        const wtBaseMapGallery = widgetBasemapGallery();
-        const btBasemapGallery = btnBasemapGallery(wtBaseMapGallery);
-        // Cargar widget de BasemapGallery
-        loadBasemapGallery(btBasemapGallery);
-    }
-
-    // Configurar widget de ScaleBar
-    function configScaleBar() {
-        // Configurar widget de ScaleBar
-        const wtScaleBar = widgetScaleBar();
-        // Cargar widget de ScaleBar
-        loadScaleBar(wtScaleBar);
-    }
-
-    // Configurar widget de Search
-    function configSearch() {
-        // Configurar widget de Search
-        const wtSearch = widgetSearch();
-        // Cargar widget de Search
-        loadSearch(wtSearch);
-    }
-
 
     // Funciones para crear elementos
     function createMap() {
@@ -82,10 +60,51 @@ require([
         });
     }
 
-    // Configurar widget ScaleBar
-    function widgetScaleBar() {
-        return new ScaleBar({
-            view: this.viewMap,
+    // Configurar widget de BasemapGallery
+    function configBasemapGallery() {
+        // Configurar widget de BasemapGallery
+        const widget = new BasemapGallery({
+            view: viewMap,
+            source: {
+                portal: {
+                    url: 'https://www.arcgis.com',
+                    // Estilos base vectoriales para mejor rendimiento
+                    useVectorBasemaps: true
+                }
+            },
+        });
+
+        const expand = new Expand({
+            view: viewMap,
+            content: widget,
+            // Tooltip para expandir el widget
+            expandTooltip: 'Mostrar estilos base',
+            // Tooltip para contraer el widget
+            collapseTooltip: 'Ocultar estilos base',
+        });
+
+        viewMap.ui.add(expand, {
+            position: 'top-right'
+        });
+    }
+
+    // Configurar widget de BasemapToggle
+    function configBasemapToggle() {
+        const widget = new BasemapToggle({
+            view: viewMap,
+            nextBasemap: 'topo'
+        });
+
+        viewMap.ui.add(widget, {
+            position: 'bottom-right',
+        });
+    }
+
+    // Configurar widget de ScaleBar
+    function configScaleBar() {
+        // Configurar widget de ScaleBar
+        const widget = new ScaleBar({
+            view: viewMap,
             // Valores: 'metric' o 'non-metric'
             unit: 'dual',
             // Valores: 'ruler' o 'line'
@@ -97,61 +116,25 @@ require([
             // Color de fondo de la barra de escala
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
         });
-    }
-    
-    // Cargar widget ScaleBar
-    function loadScaleBar(widget) {
-        this.viewMap.ui.add(widget, {
+        // Cargar widget de ScaleBar
+        
+        viewMap.ui.add(widget, {
             position: 'bottom-left',
         });
     }
 
-    // Configurar widget BasemapGallery
-    function widgetBasemapGallery() {
-        return new BasemapGallery({
-            view: this.viewMap,
-            source: {
-                portal: {
-                    url: 'https://www.arcgis.com',
-                    // Estilos base vectoriales para mejor rendimiento
-                    useVectorBasemaps: true
-                }
-            },
+    // Configurar widget de Search
+    function configSearch() {
+        // Configurar widget de Search
+        const widget = new Search({
+            view: viewMap,
         });
-    }
-        
-    // Crear botón personalizado para abrir y cerrar
-    function btnBasemapGallery(widget) {
-        return new Expand({
-            view: this.viewMap,
-            content: widget,
-            // Tooltip para expandir el widget
-            expandTooltip: 'Mostrar estilos base',
-            // Tooltip para contraer el widget
-            collapseTooltip: 'Ocultar estilos base',
-        });
-    }
-        
-    // Cargar widget BasemapGallery
-    function loadBasemapGallery(widget) {
-        this.viewMap.ui.add(widget, {
-            position: 'top-right'
-        });
-    }
 
-    // Configurar widget Search
-    function widgetSearch() {
-        return new Search({
-            view: this.viewMap,
-        });
-    }
-    
-    // Cargar widget Search
-    function loadSearch(widget) {
-        this.viewMap.ui.add(widget, {
+        viewMap.ui.add(widget, {
             position: 'top-right'
         });
     }
     
     initApp();
+    console.log(`Map: ${viewMap}`);
 });
