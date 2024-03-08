@@ -80,4 +80,37 @@ require([
             position: 'bottom-left',
         });
     }
+
+    // Configurar widget BasemapGallery
+    function widgetBasemapGallery() {
+        return new BasemapGallery({
+            view: this.viewMap,
+            source: {
+                portal: {
+                    url: 'https://www.arcgis.com',
+                    // Estilos base vectoriales para mejor rendimiento
+                    useVectorBasemaps: true
+                }
+            },
+        });
+    }
+        
+    // Crear botón personalizado para abrir y cerrar
+    function btnBasemapGallery(widget) {
+        return new Expand({
+            view: this.viewMap,
+            content: widget,
+            // Tooltip para expandir el widget
+            expandTooltip: 'Mostrar estilos base',
+            // Tooltip para contraer el widget
+            collapseTooltip: 'Ocultar estilos base',
+        });
+    }
+        
+    // Cargar widget BasemapGallery
+    function loadBasemapGallery(widget) {
+        this.viewMap.ui.add(widget, {
+            position: 'top-right'
+        });
+    }
 });
