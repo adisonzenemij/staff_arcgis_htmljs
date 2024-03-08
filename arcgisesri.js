@@ -37,6 +37,7 @@ require([
     ScaleBar,
     Search,
 ) {
+    let mapArcGis;
     let viewMap;
     let apiKey = 'AAPKee5e48ded1a54c3a969ca183ad3fe39bG6BDy8jzySt7T-Z7DjxOC4rj9910p7jpwLnxa8qKI9kWY5pNwR-o8tqyhh2ZEosK';
     let printSvc = 'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task';
@@ -46,9 +47,9 @@ require([
         esriConfig.apiKey = apiKey;
 
         // Construir mapa con el servicio de estilos base
-        const map = configMap();
+        mapArcGis = configMap();
         // Cargar vista centrada en Colombia, Bogotá
-        viewMap = loadMapView(map);
+        viewMap = loadMapView();
 
         // Posicion Top Left
         configHome();
@@ -90,9 +91,9 @@ require([
         });
     }
     
-    function loadMapView(map) {
+    function loadMapView() {
         return new MapView({
-            map: map,
+            map: mapArcGis,
             center: [-74.0808, 4.6097],
             zoom: 10,
             container: 'viewDiv',
