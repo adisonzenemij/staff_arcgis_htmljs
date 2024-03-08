@@ -57,36 +57,43 @@ require([
     let printSvc = 'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task';
     // Función para inicializar la aplicación
     function initApp() {
-        // Configura la clave de la API
-        esriConfig.apiKey = apiKey;
+        // Uso:
+        if (elementExists('viewDiv') && elementExists('tableDiv')) {
+            // Configura la clave de la API
+            esriConfig.apiKey = apiKey;
 
-        // Construir mapa con el servicio de estilos base
-        mapArcGis = configMap();
-        // Cargar vista centrada en Colombia, Bogotá
-        viewMap = loadMapView();
+            // Construir mapa con el servicio de estilos base
+            mapArcGis = configMap();
+            // Cargar vista centrada en Colombia, Bogotá
+            viewMap = loadMapView();
 
-        // Posicion Top Left
-        configHome();
-        configBasemapGallery();
-        configSearch();
-        configDirections();
+            // Posicion Top Left
+            configHome();
+            configBasemapGallery();
+            configSearch();
+            configDirections();
 
-        // Posicion Top Right
-        configCoordConv();
-        configLocate();
-        configPrint();
+            // Posicion Top Right
+            configCoordConv();
+            configLocate();
+            configPrint();
 
-        // Posicion Botton Right
-        configBasemapToggle();
+            // Posicion Botton Right
+            configBasemapToggle();
 
-        // Posicion Botton Left
-        configScaleBar();
+            // Posicion Botton Left
+            configScaleBar();
 
-        // Other Configurations
-        configFeatureTable();
+            // Other Configurations
+            configFeatureTable();
 
-        serviceFeature();
-        serviceQuery();
+            serviceFeature();
+            serviceQuery();
+        }
+    }
+
+    function elementExists(elementId) {
+        return document.getElementById(elementId) !== null;
     }
 
     function mapViewAdd(widget, position) {
@@ -358,5 +365,5 @@ require([
     }
 
     initApp();
-    console.log(viewMap);
+    //console.log(viewMap);
 });
