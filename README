@@ -1,0 +1,19 @@
+# Aplicación de Mapa con ArcGIS JavaScript API
+# Esta es una aplicación simple que utiliza la ArcGIS JavaScript API para mostrar un mapa centrado en Bogotá, Colombia, con diferentes widgets para mejorar la experiencia del usuario.
+
+# Uso
+# Clona este repositorio en tu máquina local.
+# Carga del proyecto en el  navegador web.
+
+# Widgets
+# La aplicación incluye los siguientes widgets:
+
+# BasemapGallery: Permite al usuario cambiar entre diferentes estilos base del mapa.
+# ScaleBar: Muestra una barra de escala en la esquina inferior izquierda del mapa.
+# Search: Permite al usuario buscar ubicaciones en el mapa.
+
+# Configuración
+# Antes de ejecutar la aplicación, asegúrate de configurar la clave de la API de ArcGIS en el archivo arcgisesri.js:
+
+# javascript
+# esriConfig.apiKey = 'TU_CLAVE_API';

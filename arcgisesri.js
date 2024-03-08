@@ -12,10 +12,10 @@ require([
     Map,
     MapView,
 
-	BasemapGallery,
-	Expand,
-	ScaleBar,
-	Search,
+    BasemapGallery,
+    Expand,
+    ScaleBar,
+    Search,
 ) {
     let viewMap;
     // Función para inicializar la aplicación
