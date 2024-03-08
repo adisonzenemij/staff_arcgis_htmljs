@@ -1,17 +1,24 @@
 require([
     'esri/config',
+    'esri/WebMap',
     'esri/Map',
     'esri/Graphic',
     'esri/views/MapView',
 
+    'esri/core/reactiveUtils',
+
     'esri/layers/FeatureLayer',
     'esri/layers/RouteLayer',
+
+    'esri/rest/query',
+    'esri/rest/support/Query',
 
 	'esri/widgets/BasemapGallery',
     'esri/widgets/BasemapToggle',
     'esri/widgets/CoordinateConversion',
     'esri/widgets/Directions',
 	'esri/widgets/Expand',
+    'esri/widgets/FeatureTable',
     'esri/widgets/Home',
     'esri/widgets/Locate',
     'esri/widgets/Print',
@@ -19,18 +26,25 @@ require([
 	'esri/widgets/Search',
 ], function(
     esriConfig,
+    WebMap,
     Map,
     Graphic,
     MapView,
 
+    reactiveUtils,
+
     FeatureLayer,
     RouteLayer,
+
+    query,
+    Query,
 
     BasemapGallery,
     BasemapToggle,
     CoordinateConversion,
     Directions,
     Expand,
+    FeatureTable,
     Home,
     Locate,
     Print,
@@ -67,6 +81,10 @@ require([
 
         // Posicion Botton Left
         configScaleBar();
+
+        serviceFeature();
+        //serviceData();
+        //serviceQuery();
     }
 
     function mapViewAdd(widget, position) {
@@ -179,6 +197,7 @@ require([
         mapViewAdd(widget, 'top-right');
     }
 
+    // Configurar widget de Coordinates
     function configCoordConv() {
         // Configurar widget con propiedades
         const widget = new CoordinateConversion({
@@ -199,6 +218,7 @@ require([
         mapViewAdd(expand, 'top-left');
     }
 
+    // Configurar widget de Directions
     function configDirections() {
         // Crear una capa de ruta vacía
         const routeLayer = new RouteLayer();
@@ -219,6 +239,7 @@ require([
         mapViewAdd(expand, 'top-left');
     }
 
+    // Configurar widget de Locate
     function configLocate() {
         // Configurar el widget con propiedades
         let widget = new Locate({
@@ -232,6 +253,7 @@ require([
         mapViewAdd(widget, 'top-right');
     }
 
+    // Configurar widget de Print
     function configPrint() {
         // Configurar widget con propiedades
         const widget = new Print({
@@ -253,6 +275,85 @@ require([
             after: function(response) {
                 console.log("Exported links: ", response.exportedLinks.items[0]);
             }
+        });
+    }
+
+    // Servicio de query con features
+    function serviceFeature() {
+        // Typical usage
+        // Create featurelayer from feature service
+        const layer = new FeatureLayer({
+            // URL to the service
+            url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0'
+        });
+
+        let queryParams = layer.createQuery();
+        queryParams.outFields = ['*'];
+        queryParams.outSpatialReference = { wkid: 3116 };
+        queryParams.returnGeometry = true;
+        queryParams.where = `1 = 1`;
+
+        // query the layer with the modified params object
+        layer.queryFeatures(queryParams).then(function(results){
+            // prints the array of result graphics to the console
+            console.log(results);
+            results.features.map(function(response){
+                console.log(response.attributes);
+            });
+        });
+    }
+
+    function serviceData() {
+        // Typical usage
+        // Create featurelayer from feature service
+        const layer = new FeatureLayer({
+            // URL to the service
+            url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/MapServer/0'
+        });
+          
+        const queryParams = new Query();
+        queryParams.outFields = ['*'];
+        queryParams.outSpatialReference = { wkid: 3116 };
+        queryParams.returnGeometry = true;
+        queryParams.where = `1 = 1`;
+
+        // prints the number of results satisfying the query
+        layer.queryFeatureCount(queryParams).then(function(numResults){
+            console.log(numResults);
+        });
+
+        // prints the array of Object IDs to the console
+        layer.queryObjectIds().then(function(results){
+            console.log(results);
+        });
+
+        // prints the array of Object IDs to the console
+        layer.queryObjectIds(queryParams).then(function(results){
+            console.log(results);
+        });
+        
+        // prints the array of features to the console
+        layer.queryFeatures(queryParams).then(function(results){
+            console.log(results.features);
+        });
+    }
+
+    // Servicio de query con url directa
+    function serviceQuery() {
+        // url to the layer of interest to query
+        let queryUrl = 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0';
+
+        // create the Query object
+        let queryParams = new Query();
+        queryParams.outFields = ['*'];
+        queryParams.outSpatialReference = { wkid: 3116 };
+        queryParams.returnGeometry = true;
+        queryParams.where = `1 = 1`;
+
+        // call the executeQueryJSON() method
+        query.executeQueryJSON(queryUrl, queryParams).then(function(results){
+            // results.graphics contains the graphics returned from query
+            console.log(results);
         });
     }
 
