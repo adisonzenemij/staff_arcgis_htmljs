@@ -5,6 +5,7 @@ require([
 
 	'esri/widgets/BasemapGallery',
     'esri/widgets/BasemapToggle',
+    'esri/widgets/CoordinateConversion',
 	'esri/widgets/Expand',
 	'esri/widgets/ScaleBar',
 	'esri/widgets/Search',
@@ -15,6 +16,7 @@ require([
 
     BasemapGallery,
     BasemapToggle,
+    CoordinateConversion,
     Expand,
     ScaleBar,
     Search,
@@ -30,21 +32,44 @@ require([
         // Cargar vista centrada en Colombia, Bogotá
         viewMap = loadMapView(map);
 
+        // Posicion Top Left
+        // Widget de Basemap Gallery
+        configBasemapGallery();
+
+        // Posicion Top Right
+        // Widget de Coordinate Conversion
+        configCoordConv();
         // Widget de Search
         configSearch();
-        // Widget de BasemapGallery
-        configBasemapGallery();
-        // Widget de BasemapToggle
+
+        // Posicion Botton Right
+        // Widget de Basemap Toggle
         configBasemapToggle();
-        // Widget de ScaleBar
+
+        // Posicion Botton Left
+        // Widget de Scale Bar
         configScaleBar();
+    }
+
+    function mapViewAdd(widget, position) {
+        viewMap.ui.add(widget, {
+            position: position,
+        });
     }
 
     // Funciones para crear elementos
     function createMap() {
+        let config = [
+            'arcgis/topographic',
+            'arcgis/streets',
+            'arcgis/navigation',
+            'arcgis/satellite',
+            'arcgis/dark-gray'
+        ];
+        let mapType = config[0];
         return new Map({
             // basemap styles service
-            basemap: 'arcgis/topographic',
+            basemap: mapType,
         });
     }
     
@@ -69,8 +94,8 @@ require([
                 portal: {
                     url: 'https://www.arcgis.com',
                     // Estilos base vectoriales para mejor rendimiento
-                    useVectorBasemaps: true
-                }
+                    useVectorBasemaps: true,
+                },
             },
         });
         // Expandir widget con propiedades
@@ -78,12 +103,12 @@ require([
             view: viewMap,
             content: widget,
             // Tooltip para expandir el widget
-            expandTooltip: 'Mostrar estilos base',
+            expandTooltip: 'Activar Estilos',
             // Tooltip para contraer el widget
-            collapseTooltip: 'Ocultar estilos base',
+            collapseTooltip: 'Ocultar Estilos',
         });
         // Cargar widget sobre el mapa
-        mapViewAdd(expand, 'top-right');
+        mapViewAdd(expand, 'top-left');
     }
 
     // Configurar widget de BasemapToggle
@@ -91,7 +116,7 @@ require([
         // Configurar widget con propiedades
         const widget = new BasemapToggle({
             view: viewMap,
-            nextBasemap: 'topo'
+            nextBasemap: 'topo',
         });
         // Cargar widget sobre el mapa
         mapViewAdd(widget, 'bottom-right');
@@ -127,10 +152,13 @@ require([
         mapViewAdd(widget, 'top-right');
     }
 
-    function mapViewAdd(widget, position) {
-        viewMap.ui.add(widget, {
-            position: position
+    function configCoordConv() {
+        // Configurar widget con propiedades
+        const widget = new CoordinateConversion({
+            view: viewMap,
         });
+        // Cargar widget sobre el mapa
+        mapViewAdd(widget, 'top-right');
     }
     
     initApp();
