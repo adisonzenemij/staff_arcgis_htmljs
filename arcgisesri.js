@@ -2,10 +2,20 @@ require([
     'esri/config',
     'esri/Map',
     'esri/views/MapView',
+
+	'esri/widgets/BasemapGallery',
+	'esri/widgets/Expand',
+	'esri/widgets/ScaleBar',
+	'esri/widgets/Search',
 ], function(
     esriConfig,
     Map,
     MapView,
+
+	BasemapGallery,
+	Expand,
+	ScaleBar,
+	Search,
 ) {
     let viewMap;
     // Función para inicializar la aplicación
@@ -16,26 +26,41 @@ require([
         // Construir mapa con el servicio de estilos base
         const map = createMap();
         // Cargar vista centrada en Colombia, Bogotá
-        //const view = loadMapView(map);
         this.viewMap = loadMapView(map);
-        //console.log(this.viewMap);
 
+        // Widget de Search
+        configSearch();
+        // Widget de BasemapGallery
+        configBasemapGallery();
+        // Widget de ScaleBar
+        configScaleBar();
+    }
+
+    // Configurar widget de BasemapGallery
+    function configBasemapGallery() {
         // Configurar widget de BasemapGallery
         const wtBaseMapGallery = widgetBasemapGallery();
         const btBasemapGallery = btnBasemapGallery(wtBaseMapGallery);
         // Cargar widget de BasemapGallery
         loadBasemapGallery(btBasemapGallery);
+    }
 
+    // Configurar widget de ScaleBar
+    function configScaleBar() {
         // Configurar widget de ScaleBar
         const wtScaleBar = widgetScaleBar();
         // Cargar widget de ScaleBar
         loadScaleBar(wtScaleBar);
+    }
 
+    // Configurar widget de Search
+    function configSearch() {
         // Configurar widget de Search
         const wtSearch = widgetSearch();
         // Cargar widget de Search
         loadSearch(wtSearch);
     }
+
 
     // Funciones para crear elementos
     function createMap() {
@@ -113,4 +138,20 @@ require([
             position: 'top-right'
         });
     }
+
+    // Configurar widget Search
+    function widgetSearch() {
+        return new Search({
+            view: this.viewMap,
+        });
+    }
+    
+    // Cargar widget Search
+    function loadSearch(widget) {
+        this.viewMap.ui.add(widget, {
+            position: 'top-right'
+        });
+    }
+    
+    initApp();
 });
