@@ -14,6 +14,7 @@ require([
 	'esri/widgets/Expand',
     'esri/widgets/Home',
     'esri/widgets/Locate',
+    'esri/widgets/Print',
 	'esri/widgets/ScaleBar',
 	'esri/widgets/Search',
 ], function(
@@ -32,14 +33,17 @@ require([
     Expand,
     Home,
     Locate,
+    Print,
     ScaleBar,
     Search,
 ) {
     let viewMap;
+    let apiKey = 'AAPKee5e48ded1a54c3a969ca183ad3fe39bG6BDy8jzySt7T-Z7DjxOC4rj9910p7jpwLnxa8qKI9kWY5pNwR-o8tqyhh2ZEosK';
+    let printSvc = 'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task';
     // Función para inicializar la aplicación
     function initApp() {
         // Configura la clave de la API
-        esriConfig.apiKey = 'AAPKee5e48ded1a54c3a969ca183ad3fe39bG6BDy8jzySt7T-Z7DjxOC4rj9910p7jpwLnxa8qKI9kWY5pNwR-o8tqyhh2ZEosK';
+        esriConfig.apiKey = apiKey;
 
         // Construir mapa con el servicio de estilos base
         const map = configMap();
@@ -55,6 +59,7 @@ require([
         // Posicion Top Right
         configCoordConv();
         configLocate();
+        configPrint();
 
         // Posicion Botton Right
         configBasemapToggle();
@@ -225,7 +230,31 @@ require([
         // Cargar widget sobre el mapa
         mapViewAdd(widget, 'top-right');
     }
-    
+
+    function configPrint() {
+        // Configurar widget con propiedades
+        const widget = new Print({
+            view: viewMap,
+            printServiceUrl: printSvc,
+        });
+        // Expandir el widget con botones
+        const expand = new Expand({
+            view: viewMap,
+            content: widget,
+            expandTooltip: 'Imprimir',
+            expandIconClass: 'esri-icon-printer'
+        });
+        // Cargar widget sobre el mapa
+        mapViewAdd(expand, 'top-right');
+        // Agregar interceptor para monitorear la solicitud de impresión
+        esriConfig.request.interceptors.push({
+            urls: widget.printServiceUrl,
+            after: function(response) {
+                console.log("Exported links: ", response.exportedLinks.items[0]);
+            }
+        });
+    }
+
     initApp();
     console.log(viewMap);
 });
