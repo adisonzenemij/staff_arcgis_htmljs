@@ -82,9 +82,11 @@ require([
         // Posicion Botton Left
         configScaleBar();
 
+        // Other Configurations
+        configFeatureTable();
+
         serviceFeature();
-        //serviceData();
-        //serviceQuery();
+        serviceQuery();
     }
 
     function mapViewAdd(widget, position) {
@@ -278,9 +280,26 @@ require([
         });
     }
 
+    // Configurar widget de Print
+    function configFeatureTable() {
+        //document.getElementById('tableDiv').innerHTML = null;
+        const layer = new FeatureLayer({
+            // URL to the service
+            url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0'
+        });
+        // Agregar layer sobre el mapa
+        viewMap.map.add(layer);
+        // Agregar datos sobre la tabla
+        const data = new FeatureTable({
+            view: viewMap,
+            layer: layer,
+            container:'tableDiv',
+        });
+        console.log(data);
+    }
+
     // Servicio de query con features
     function serviceFeature() {
-        // Typical usage
         // Create featurelayer from feature service
         const layer = new FeatureLayer({
             // URL to the service
