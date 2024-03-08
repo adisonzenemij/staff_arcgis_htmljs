@@ -36,4 +36,24 @@ require([
         // Cargar widget de Search
         loadSearch(wtSearch);
     }
+
+    // Funciones para crear elementos
+    function createMap() {
+        return new Map({
+            // basemap styles service
+            basemap: 'arcgis/topographic',
+        });
+    }
+    
+    function loadMapView(map) {
+        return new MapView({
+        map: map,
+        center: [-74.0808, 4.6097],
+        zoom: 10,
+        container: 'viewDiv',
+        constraints: {
+            snapToZoom: false,
+        },
+        });
+    }
 });
