@@ -297,25 +297,11 @@ require([
         layer.queryFeatures(queryParams).then(function(results){
             // prints the array of result graphics to the console
             console.log(results);
+            console.log(results.features);
             results.features.map(function(response){
                 console.log(response.attributes);
             });
         });
-    }
-
-    function serviceData() {
-        // Typical usage
-        // Create featurelayer from feature service
-        const layer = new FeatureLayer({
-            // URL to the service
-            url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/MapServer/0'
-        });
-          
-        const queryParams = new Query();
-        queryParams.outFields = ['*'];
-        queryParams.outSpatialReference = { wkid: 3116 };
-        queryParams.returnGeometry = true;
-        queryParams.where = `1 = 1`;
 
         // prints the number of results satisfying the query
         layer.queryFeatureCount(queryParams).then(function(numResults){
@@ -330,11 +316,6 @@ require([
         // prints the array of Object IDs to the console
         layer.queryObjectIds(queryParams).then(function(results){
             console.log(results);
-        });
-        
-        // prints the array of features to the console
-        layer.queryFeatures(queryParams).then(function(results){
-            console.log(results.features);
         });
     }
 
