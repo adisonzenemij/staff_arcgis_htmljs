@@ -1,6 +1,7 @@
 require([
     'esri/config',
     'esri/Map',
+    'esri/Graphic',
     'esri/views/MapView',
 
     'esri/layers/FeatureLayer',
@@ -12,11 +13,13 @@ require([
     'esri/widgets/Directions',
 	'esri/widgets/Expand',
     'esri/widgets/Home',
+    'esri/widgets/Locate',
 	'esri/widgets/ScaleBar',
 	'esri/widgets/Search',
 ], function(
     esriConfig,
     Map,
+    Graphic,
     MapView,
 
     FeatureLayer,
@@ -28,6 +31,7 @@ require([
     Directions,
     Expand,
     Home,
+    Locate,
     ScaleBar,
     Search,
 ) {
@@ -50,6 +54,7 @@ require([
 
         // Posicion Top Right
         configCoordConv();
+        configLocate();
 
         // Posicion Botton Right
         configBasemapToggle();
@@ -206,6 +211,19 @@ require([
         });
         // Cargar widget sobre el mapa
         mapViewAdd(expand, 'top-left');
+    }
+
+    function configLocate() {
+        // Configurar el widget con propiedades
+        let widget = new Locate({
+            // Attaches the Locate button to the view
+            view: viewMap,
+            graphic: new Graphic({
+                symbol: { type: "simple-marker" },
+            })
+        });
+        // Cargar widget sobre el mapa
+        mapViewAdd(widget, 'top-right');
     }
     
     initApp();
