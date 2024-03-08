@@ -62,7 +62,7 @@ require([
 
     // Configurar widget de BasemapGallery
     function configBasemapGallery() {
-        // Configurar widget de BasemapGallery
+        // Configurar widget con propiedades
         const widget = new BasemapGallery({
             view: viewMap,
             source: {
@@ -73,7 +73,7 @@ require([
                 }
             },
         });
-
+        // Expandir widget con propiedades
         const expand = new Expand({
             view: viewMap,
             content: widget,
@@ -82,27 +82,24 @@ require([
             // Tooltip para contraer el widget
             collapseTooltip: 'Ocultar estilos base',
         });
-
-        viewMap.ui.add(expand, {
-            position: 'top-right'
-        });
+        // Cargar widget sobre el mapa
+        mapViewAdd(expand, 'top-right');
     }
 
     // Configurar widget de BasemapToggle
     function configBasemapToggle() {
+        // Configurar widget con propiedades
         const widget = new BasemapToggle({
             view: viewMap,
             nextBasemap: 'topo'
         });
-
-        viewMap.ui.add(widget, {
-            position: 'bottom-right',
-        });
+        // Cargar widget sobre el mapa
+        mapViewAdd(widget, 'bottom-right');
     }
 
     // Configurar widget de ScaleBar
     function configScaleBar() {
-        // Configurar widget de ScaleBar
+        // Configurar widget con propiedades
         const widget = new ScaleBar({
             view: viewMap,
             // Valores: 'metric' o 'non-metric'
@@ -116,25 +113,26 @@ require([
             // Color de fondo de la barra de escala
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
         });
-        // Cargar widget de ScaleBar
-        
-        viewMap.ui.add(widget, {
-            position: 'bottom-left',
-        });
+        // Cargar widget sobre el mapa
+        mapViewAdd(widget, 'bottom-left');
     }
 
     // Configurar widget de Search
     function configSearch() {
-        // Configurar widget de Search
+        // Configurar widget con propiedades
         const widget = new Search({
             view: viewMap,
         });
+        // Cargar widget sobre el mapa
+        mapViewAdd(widget, 'top-right');
+    }
 
+    function mapViewAdd(widget, position) {
         viewMap.ui.add(widget, {
-            position: 'top-right'
+            position: position
         });
     }
     
     initApp();
-    console.log(`Map: ${viewMap}`);
+    console.log(viewMap);
 });
