@@ -3,10 +3,15 @@ require([
     'esri/Map',
     'esri/views/MapView',
 
+    'esri/layers/FeatureLayer',
+    'esri/layers/RouteLayer',
+
 	'esri/widgets/BasemapGallery',
     'esri/widgets/BasemapToggle',
     'esri/widgets/CoordinateConversion',
+    'esri/widgets/Directions',
 	'esri/widgets/Expand',
+    'esri/widgets/Home',
 	'esri/widgets/ScaleBar',
 	'esri/widgets/Search',
 ], function(
@@ -14,10 +19,15 @@ require([
     Map,
     MapView,
 
+    FeatureLayer,
+    RouteLayer,
+
     BasemapGallery,
     BasemapToggle,
     CoordinateConversion,
+    Directions,
     Expand,
+    Home,
     ScaleBar,
     Search,
 ) {
@@ -28,26 +38,23 @@ require([
         esriConfig.apiKey = 'AAPKee5e48ded1a54c3a969ca183ad3fe39bG6BDy8jzySt7T-Z7DjxOC4rj9910p7jpwLnxa8qKI9kWY5pNwR-o8tqyhh2ZEosK';
 
         // Construir mapa con el servicio de estilos base
-        const map = createMap();
+        const map = configMap();
         // Cargar vista centrada en Colombia, Bogotá
         viewMap = loadMapView(map);
 
         // Posicion Top Left
-        // Widget de Basemap Gallery
+        configHome();
         configBasemapGallery();
+        configSearch();
+        configDirections();
 
         // Posicion Top Right
-        // Widget de Coordinate Conversion
         configCoordConv();
-        // Widget de Search
-        configSearch();
 
         // Posicion Botton Right
-        // Widget de Basemap Toggle
         configBasemapToggle();
 
         // Posicion Botton Left
-        // Widget de Scale Bar
         configScaleBar();
     }
 
@@ -58,7 +65,7 @@ require([
     }
 
     // Funciones para crear elementos
-    function createMap() {
+    function configMap() {
         let config = [
             'arcgis/topographic',
             'arcgis/streets',
@@ -84,6 +91,15 @@ require([
             },
         });
     }
+    
+    function configHome() {
+        // Configurar widget con propiedades
+        let widget = new Home({
+            view: viewMap
+        });
+        // Cargar widget sobre el mapa
+        mapViewAdd(widget, 'top-left');
+    }
 
     // Configurar widget de BasemapGallery
     function configBasemapGallery() {
@@ -98,7 +114,7 @@ require([
                 },
             },
         });
-        // Expandir widget con propiedades
+        // Expandir el widget con botones
         const expand = new Expand({
             view: viewMap,
             content: widget,
@@ -157,8 +173,39 @@ require([
         const widget = new CoordinateConversion({
             view: viewMap,
         });
+        // Expandir el widget con botones
+        const expand = new Expand({
+            view: viewMap,
+            content: widget,
+            // Tooltip para expandir el widget
+            expandTooltip: 'Activar Conversión de Coordenadas',
+            // Tooltip para contraer el widget
+            collapseTooltip: 'Ocultar Conversión de Coordenadas',
+            // Posición del widget expandible
+            //expandIconClass: 'esri-icon-coordinate',
+        });
         // Cargar widget sobre el mapa
-        mapViewAdd(widget, 'top-right');
+        mapViewAdd(expand, 'top-left');
+    }
+
+    function configDirections() {
+        // Crear una capa de ruta vacía
+        const routeLayer = new RouteLayer();
+        // Configurar el widget con propiedades
+        const widget = new Directions({
+            view: viewMap,
+            layer: routeLayer
+        });
+        // Expandir el widget con botones
+        const expand = new Expand({
+            view: viewMap,
+            content: widget,
+            expandIconClass: 'esri-icon-directions',
+            expandTooltip: 'Activar Direcciones',
+            collapseTooltip: 'Ocultar Direcciones',
+        });
+        // Cargar widget sobre el mapa
+        mapViewAdd(expand, 'top-left');
     }
     
     initApp();
