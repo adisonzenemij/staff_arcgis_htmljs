@@ -47,13 +47,37 @@ require([
     
     function loadMapView(map) {
         return new MapView({
-        map: map,
-        center: [-74.0808, 4.6097],
-        zoom: 10,
-        container: 'viewDiv',
-        constraints: {
-            snapToZoom: false,
-        },
+            map: map,
+            center: [-74.0808, 4.6097],
+            zoom: 10,
+            container: 'viewDiv',
+            constraints: {
+                snapToZoom: false,
+            },
+        });
+    }
+
+    // Configurar widget ScaleBar
+    function widgetScaleBar() {
+        return new ScaleBar({
+            view: this.viewMap,
+            // Valores: 'metric' o 'non-metric'
+            unit: 'dual',
+            // Valores: 'ruler' o 'line'
+            style: 'line', 
+            // ID del contenedor
+            container: 'customScaleBarContainer',
+            // Color de la barra de escala
+            color: 'blue',
+            // Color de fondo de la barra de escala
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        });
+    }
+    
+    // Cargar widget ScaleBar
+    function loadScaleBar(widget) {
+        this.viewMap.ui.add(widget, {
+            position: 'bottom-left',
         });
     }
 });
