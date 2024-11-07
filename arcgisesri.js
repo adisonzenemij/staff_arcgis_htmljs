@@ -351,7 +351,7 @@ require([
     function serviceQuery() {
         // url to the layer of interest to query
         //let queryUrl = 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0';
-        let queryUrl = 'httpshttps://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0;
+        let queryUrl = 'https://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0';
 
         // create the Query object
         let queryParams = new Query();
