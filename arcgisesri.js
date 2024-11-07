@@ -292,7 +292,8 @@ require([
         //document.getElementById('tableDiv').innerHTML = null;
         const layer = new FeatureLayer({
             // URL to the service
-            url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0'
+            //url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0'
+            url: 'https://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0'
         });
         // Agregar layer sobre el mapa
         viewMap.map.add(layer);
@@ -310,7 +311,8 @@ require([
         // Create featurelayer from feature service
         const layer = new FeatureLayer({
             // URL to the service
-            url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0'
+            //url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0'
+            url: 'https://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0'
         });
 
         let queryParams = layer.createQuery();
@@ -348,7 +350,8 @@ require([
     // Servicio de query con url directa
     function serviceQuery() {
         // url to the layer of interest to query
-        let queryUrl = 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0';
+        //let queryUrl = 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0';
+        let queryUrl = 'httpshttps://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0;
 
         // create the Query object
         let queryParams = new Query();
