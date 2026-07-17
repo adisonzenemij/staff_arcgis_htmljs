@@ -18,8 +18,9 @@ require([
     'esri/widgets/CoordinateConversion',
     'esri/widgets/Directions',
 	'esri/widgets/Expand',
-    'esri/widgets/FeatureTable',
+	'esri/widgets/FeatureTable',
     'esri/widgets/Home',
+    'esri/widgets/LayerList',
     'esri/widgets/Locate',
     'esri/widgets/Print',
 	'esri/widgets/ScaleBar',
@@ -46,6 +47,7 @@ require([
     Expand,
     FeatureTable,
     Home,
+    LayerList,
     Locate,
     Print,
     ScaleBar,
@@ -53,12 +55,15 @@ require([
 ) {
     let mapArcGis;
     let viewMap;
+    let aprovechamientoLayer;
     let apiKey = 'AAPKee5e48ded1a54c3a969ca183ad3fe39bG6BDy8jzySt7T-Z7DjxOC4rj9910p7jpwLnxa8qKI9kWY5pNwR-o8tqyhh2ZEosK';
     let printSvc = 'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task';
     // Función para inicializar la aplicación
     function initApp() {
         // Uso:
         if (elementExists('viewDiv') && elementExists('tableDiv')) {
+            configShellPanels();
+
             // Configura la clave de la API
             esriConfig.apiKey = apiKey;
 
@@ -86,6 +91,7 @@ require([
 
             // Other Configurations
             configFeatureTable();
+            configLayerList();
 
             serviceFeature();
             serviceQuery();
@@ -99,6 +105,38 @@ require([
     function mapViewAdd(widget, position) {
         viewMap.ui.add(widget, {
             position: position,
+        });
+    }
+
+    function configShellPanels() {
+        const shellPanelStart = document.getElementById('shell-panel-start');
+        const panelStart = document.getElementById('panel-start');
+        const actionsStart = shellPanelStart?.querySelectorAll('calcite-action');
+
+        if (!shellPanelStart || !panelStart || !actionsStart?.length) {
+            return;
+        }
+
+        actionsStart.forEach(function(action) {
+            action.addEventListener('click', function() {
+                const shouldOpen = shellPanelStart.collapsed || panelStart.closed || !action.active;
+
+                actionsStart.forEach(function(item) {
+                    item.active = false;
+                });
+
+                action.active = shouldOpen;
+                shellPanelStart.collapsed = !shouldOpen;
+                panelStart.closed = !shouldOpen;
+                panelStart.heading = action.text;
+            });
+        });
+
+        panelStart.addEventListener('calcitePanelClose', function() {
+            actionsStart.forEach(function(action) {
+                action.active = false;
+            });
+            shellPanelStart.collapsed = true;
         });
     }
 
@@ -290,20 +328,44 @@ require([
     // Configurar widget de Print
     function configFeatureTable() {
         //document.getElementById('tableDiv').innerHTML = null;
-        const layer = new FeatureLayer({
+        aprovechamientoLayer = new FeatureLayer({
             // URL to the service
             //url: 'https://gis.transmilenio.gov.co/arcgis/rest/services/Zonal/consulta_paraderos/FeatureServer/0'
-            url: 'https://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0'
+            url: 'https://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0',
+            title: 'Edición aprovechamiento - Área del Predio'
         });
         // Agregar layer sobre el mapa
-        viewMap.map.add(layer);
+        viewMap.map.add(aprovechamientoLayer);
         // Agregar datos sobre la tabla
         const data = new FeatureTable({
             view: viewMap,
-            layer: layer,
+            layer: aprovechamientoLayer,
             container:'tableDiv',
         });
         console.log(data);
+    }
+
+    function configLayerList() {
+        if (!elementExists('layerListDiv')) {
+            return;
+        }
+
+        const layerList = new LayerList({
+            view: viewMap,
+            container: 'layerListDiv',
+            listItemCreatedFunction: function(event) {
+                const item = event.item;
+
+                if (item.layer === aprovechamientoLayer) {
+                    item.panel = {
+                        content: 'legend',
+                        open: true,
+                    };
+                }
+            },
+        });
+
+        console.log(layerList);
     }
 
     // Servicio de query con features

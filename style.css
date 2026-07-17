@@ -6,16 +6,42 @@ body {
     padding: 0;
 }
 
+calcite-shell {
+    height: 100vh;
+    width: 100vw;
+}
+
+calcite-shell-panel {
+    --calcite-shell-panel-width: 320px;
+}
+
+#map-panel {
+    height: 100%;
+}
+
+#map-panel::part(content) {
+    padding: 0;
+}
+
+#appLayout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
 #viewDiv {
-    /*padding: 0;
-    margin: 0;*/
-    height: 75%;
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
 }
 
 #tableDiv {
-    /*padding: 0;
-    margin: 0;*/
-    height: 25%;
+    flex: 0 0 25%;
+    min-height: 180px;
     width: 100%;
+}
+
+#layerListDiv {
+    min-height: 260px;
 }

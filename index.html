@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,11 +20,34 @@
 	<link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css">
 	<script src="https://js.arcgis.com/4.29/"></script>
 
+	<!-- Calcite Components CDN -->
+	<link rel="stylesheet" href="https://js.arcgis.com/calcite-components/2.8.5/calcite.css">
+	<script type="module" src="https://js.arcgis.com/calcite-components/2.8.5/calcite.esm.js"></script>
+
 	<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-	<div id="viewDiv"></div>
-	<div id="tableDiv"></div>
+	<calcite-shell>
+		<calcite-shell-panel slot="panel-start" id="shell-panel-start">
+			<calcite-action-bar slot="action-bar">
+				<calcite-action active icon="layers" text="Capas" text-enabled></calcite-action>
+			</calcite-action-bar>
+			<calcite-panel heading="Capas" id="panel-start" closable>
+				<calcite-block heading="Capas cargadas" open>
+					<div id="layerListDiv"></div>
+				</calcite-block>
+			</calcite-panel>
+		</calcite-shell-panel>
+
+		<calcite-panel heading="Mapa" id="map-panel">
+			<div id="appLayout">
+				<div id="viewDiv"></div>
+				<div id="tableDiv"></div>
+			</div>
+		</calcite-panel>
+	</calcite-shell>
 	<script src="arcgisesri.js"></script>
 </body>
+
 </html>
