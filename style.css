@@ -15,6 +15,14 @@ calcite-shell-panel {
     --calcite-shell-panel-width: 320px;
 }
 
+#panel-start {
+    height: 100%;
+}
+
+#panel-start::part(content) {
+    padding: 0;
+}
+
 #map-panel {
     height: 100%;
 }
@@ -43,5 +51,6 @@ calcite-shell-panel {
 }
 
 #layerListDiv {
-    min-height: 260px;
+    height: 100%;
+    width: 100%;
 }
