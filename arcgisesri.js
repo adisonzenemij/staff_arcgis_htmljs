@@ -58,6 +58,7 @@ require([
     let mapArcGis;
     let viewMap;
     let aprovechamientoLayer;
+    let featureTable;
     let apiKey = 'AAPKee5e48ded1a54c3a969ca183ad3fe39bG6BDy8jzySt7T-Z7DjxOC4rj9910p7jpwLnxa8qKI9kWY5pNwR-o8tqyhh2ZEosK';
     let printSvc = 'https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task';
     // Función para inicializar la aplicación
@@ -138,6 +139,13 @@ require([
                 action.active = false;
             });
             shellPanelStart.collapsed = true;
+        });
+
+        const shellPanelEnd = document.getElementById('shell-panel-end');
+        const panelEnd = document.getElementById('panel-end');
+
+        panelEnd?.addEventListener('calcitePanelClose', function() {
+            shellPanelEnd.collapsed = true;
         });
     }
 
@@ -390,9 +398,10 @@ require([
                 });
             });
 
-            viewMap.map.addMany(groups);
+            // El LayerList muestra primero las capas ubicadas arriba en el mapa.
+            viewMap.map.addMany(groups.reverse());
 
-            new FeatureTable({
+            featureTable = new FeatureTable({
                 view: viewMap,
                 layer: aprovechamientoLayer,
                 container: 'tableDiv',
@@ -409,6 +418,21 @@ require([
             return;
         }
 
+        const groupActions = [
+            { id: 'zoom-to', title: 'Acercar a capa', className: 'esri-icon-zoom-in-magnifying-glass' },
+            { id: 'show-properties', title: 'Mostrar propiedades', className: 'esri-icon-description' },
+            { id: 'rename', title: 'Cambiar nombre', className: 'esri-icon-edit' },
+            { id: 'remove', title: 'Eliminar', className: 'esri-icon-trash' },
+            { id: 'move-to-basemap', title: 'Mover al mapa base', className: 'esri-icon-basemap' },
+            { id: 'group', title: 'Grupo', className: 'esri-icon-group' },
+        ];
+        const layerActions = [
+            { id: 'show-properties', title: 'Mostrar propiedades', className: 'esri-icon-description' },
+            { id: 'show-table', title: 'Mostrar tabla', className: 'esri-icon-table' },
+            { id: 'rename', title: 'Cambiar nombre', className: 'esri-icon-edit' },
+            { id: 'remove', title: 'Eliminar', className: 'esri-icon-trash' },
+        ];
+
         const layerList = new LayerList({
             view: viewMap,
             container: 'layerListDiv',
@@ -418,10 +442,181 @@ require([
                 if (item.layer.type === 'group') {
                     item.open = true;
                 }
+
+                item.actionsSections = [
+                    (item.layer.type === 'group' ? groupActions : layerActions).map(function(action) {
+                        return Object.assign({}, action);
+                    }),
+                ];
             },
         });
 
-        console.log(layerList);
+        layerList.on('trigger-action', function(event) {
+            handleLayerAction(event.action.id, event.item.layer);
+        });
+    }
+
+    function handleLayerAction(actionId, layer) {
+        switch (actionId) {
+            case 'zoom-to':
+                zoomToLayer(layer);
+                break;
+            case 'show-properties':
+                showLayerProperties(layer);
+                break;
+            case 'show-table':
+                showLayerTable(layer);
+                break;
+            case 'rename':
+                renameLayer(layer);
+                break;
+            case 'remove':
+                removeLayer(layer);
+                break;
+            case 'move-to-basemap':
+                moveLayerToBasemap(layer);
+                break;
+            case 'group':
+                groupLayer(layer);
+                break;
+            default:
+                break;
+        }
+    }
+
+    async function zoomToLayer(layer) {
+        try {
+            await layer.load();
+            let extent = layer.fullExtent;
+
+            if (!extent && layer.type === 'group') {
+                const childLayers = layer.layers.toArray();
+                await Promise.all(childLayers.map(function(childLayer) {
+                    return childLayer.load();
+                }));
+                extent = childLayers.reduce(function(currentExtent, childLayer) {
+                    return currentExtent ? currentExtent.union(childLayer.fullExtent) : childLayer.fullExtent;
+                }, null);
+            }
+
+            if (extent) {
+                await viewMap.goTo(extent.expand(1.15));
+            }
+        } catch (error) {
+            console.error('No se pudo acercar a la capa:', error);
+        }
+    }
+
+    function showLayerProperties(layer) {
+        const shellPanelEnd = document.getElementById('shell-panel-end');
+        const panelEnd = document.getElementById('panel-end');
+        const propertiesDiv = document.getElementById('propertiesDiv');
+
+        if (!shellPanelEnd || !panelEnd || !propertiesDiv) {
+            return;
+        }
+
+        const rows = [
+            ['Nombre', layer.title],
+            ['Tipo', layer.type === 'group' ? 'Grupo de capas' : 'Capa de entidades'],
+            ['Visibilidad', layer.visible ? 'Visible' : 'Oculta'],
+            ['URL', layer.url || 'No aplica'],
+        ];
+        const list = document.createElement('dl');
+        list.className = 'property-list';
+
+        rows.forEach(function([label, value]) {
+            const row = document.createElement('div');
+            const term = document.createElement('dt');
+            const definition = document.createElement('dd');
+
+            row.className = 'property-row';
+            term.textContent = label;
+            definition.textContent = value;
+            row.append(term, definition);
+            list.append(row);
+        });
+
+        propertiesDiv.replaceChildren(list);
+        panelEnd.heading = layer.title;
+        panelEnd.closed = false;
+        shellPanelEnd.collapsed = false;
+    }
+
+    function showLayerTable(layer) {
+        if (layer.type === 'group') {
+            return;
+        }
+
+        featureTable?.destroy();
+        document.getElementById('tableDiv').replaceChildren();
+        featureTable = new FeatureTable({
+            view: viewMap,
+            layer,
+            container: 'tableDiv',
+        });
+    }
+
+    function renameLayer(layer) {
+        const title = window.prompt('Nuevo nombre de la capa:', layer.title);
+
+        if (title && title.trim()) {
+            layer.title = title.trim();
+        }
+    }
+
+    function removeLayer(layer) {
+        if (!window.confirm(`¿Eliminar "${layer.title}" del mapa?`)) {
+            return;
+        }
+
+        if (layer.parent?.layers) {
+            layer.parent.layers.remove(layer);
+        } else {
+            viewMap.map.layers.remove(layer);
+        }
+
+        if (featureTable?.layer === layer) {
+            featureTable.destroy();
+            featureTable = null;
+            document.getElementById('tableDiv').replaceChildren();
+        }
+    }
+
+    function moveLayerToBasemap(layer) {
+        if (layer.type === 'group') {
+            layer.layers.toArray().forEach(function(childLayer) {
+                layer.layers.remove(childLayer);
+                viewMap.map.basemap.baseLayers.add(childLayer);
+            });
+            viewMap.map.layers.remove(layer);
+            return;
+        }
+
+        if (layer.parent?.layers) {
+            layer.parent.layers.remove(layer);
+        } else {
+            viewMap.map.layers.remove(layer);
+        }
+        viewMap.map.basemap.baseLayers.add(layer);
+    }
+
+    function groupLayer(layer) {
+        const groupTitle = window.prompt('Nombre del nuevo grupo:', `Grupo de ${layer.title}`);
+
+        if (!groupTitle || !groupTitle.trim()) {
+            return;
+        }
+
+        const parentLayers = layer.parent?.layers || viewMap.map.layers;
+        const index = parentLayers.indexOf(layer);
+        parentLayers.remove(layer);
+        const newGroup = new GroupLayer({
+            title: groupTitle.trim(),
+            visibilityMode: 'independent',
+            layers: [layer],
+        });
+        parentLayers.add(newGroup, index);
     }
 
     // Servicio de query con features
