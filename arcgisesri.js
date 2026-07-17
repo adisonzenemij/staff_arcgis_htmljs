@@ -8,6 +8,7 @@ require([
     'esri/core/reactiveUtils',
 
     'esri/layers/FeatureLayer',
+    'esri/layers/GroupLayer',
     'esri/layers/RouteLayer',
 
     'esri/rest/query',
@@ -35,6 +36,7 @@ require([
     reactiveUtils,
 
     FeatureLayer,
+    GroupLayer,
     RouteLayer,
 
     query,
@@ -334,8 +336,15 @@ require([
             url: 'https://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0',
             title: 'Edición aprovechamiento - Área del Predio'
         });
+        aprovechamientoLayer.title = 'Registro Unico Nacional AP';
+
+        const defaultGroupLayer = new GroupLayer({
+            title: 'Predeterminado',
+            visibilityMode: 'independent',
+            layers: [aprovechamientoLayer],
+        });
         // Agregar layer sobre el mapa
-        viewMap.map.add(aprovechamientoLayer);
+        viewMap.map.add(defaultGroupLayer);
         // Agregar datos sobre la tabla
         const data = new FeatureTable({
             view: viewMap,
@@ -356,11 +365,8 @@ require([
             listItemCreatedFunction: function(event) {
                 const item = event.item;
 
-                if (item.layer === aprovechamientoLayer) {
-                    item.panel = {
-                        content: 'legend',
-                        open: true,
-                    };
+                if (item.layer.title === 'Predeterminado') {
+                    item.open = true;
                 }
             },
         });
