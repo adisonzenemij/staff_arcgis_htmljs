@@ -336,7 +336,7 @@ require([
             url: 'https://test-map-services.minambiente.gov.co/arcgis/rest/services/aprovechamiento/Edicion_aprovechamiento/FeatureServer/0',
             title: 'Edición aprovechamiento - Área del Predio'
         });
-        aprovechamientoLayer.title = 'Registro Unico Nacional AP';
+        aprovechamientoLayer.title = 'Edición aprovechamiento - Área del Predio';
 
         const defaultGroupLayer = new GroupLayer({
             title: 'Predeterminado',
