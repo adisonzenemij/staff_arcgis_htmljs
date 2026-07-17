@@ -92,8 +92,7 @@ require([
             configScaleBar();
 
             // Other Configurations
-            configFeatureTable();
-            configLayerList();
+            configLayerGroups();
 
             serviceFeature();
             serviceQuery();
@@ -354,6 +353,57 @@ require([
         console.log(data);
     }
 
+    async function configLayerGroups() {
+        const layerFiles = [
+            ['Predeterminado', 'assets/json/arcgis/layers.json'],
+            ['Ministerio', 'assets/json/arcgis/ministerio.json'],
+            ['Transmilenio', 'assets/json/arcgis/transmilenio.json'],
+        ];
+
+        try {
+            const layerConfigs = await Promise.all(
+                layerFiles.map(async function([groupTitle, file]) {
+                    const response = await fetch(file);
+
+                    if (!response.ok) {
+                        throw new Error(`No se pudo cargar ${file}.`);
+                    }
+
+                    return {
+                        groupTitle,
+                        layer: await response.json(),
+                    };
+                }),
+            );
+
+            const groups = layerConfigs.map(function(config) {
+                const layer = new FeatureLayer(config.layer);
+
+                if (config.groupTitle === 'Ministerio') {
+                    aprovechamientoLayer = layer;
+                }
+
+                return new GroupLayer({
+                    title: config.groupTitle,
+                    visibilityMode: 'independent',
+                    layers: [layer],
+                });
+            });
+
+            viewMap.map.addMany(groups);
+
+            new FeatureTable({
+                view: viewMap,
+                layer: aprovechamientoLayer,
+                container: 'tableDiv',
+            });
+
+            configLayerList();
+        } catch (error) {
+            console.error('Error al cargar la configuración de capas:', error);
+        }
+    }
+
     function configLayerList() {
         if (!elementExists('layerListDiv')) {
             return;
@@ -365,7 +415,7 @@ require([
             listItemCreatedFunction: function(event) {
                 const item = event.item;
 
-                if (item.layer.title === 'Predeterminado') {
+                if (item.layer.type === 'group') {
                     item.open = true;
                 }
             },
